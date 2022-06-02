@@ -14,7 +14,7 @@ class App
   def headers
     { 'Content-type' => 'text/plain' }
   end
-  ß
+
   def body
     ["Hello world!\n"]
   end
