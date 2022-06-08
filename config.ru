@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'middleware/date_time_format'
+require_relative 'middleware/formatting'
 require_relative 'app'
 
-use DateTimeFormat
+use Formatting
 run App.new
