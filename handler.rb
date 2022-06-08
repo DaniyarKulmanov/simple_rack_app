@@ -2,12 +2,6 @@
 
 require 'rack'
 
-app = proc do |env|
-  [
-    200,
-    { 'Content-type' => 'text/plain' },
-    ["Hello world simple proc!\n"]
-  ]
-end
+app = ->(env) { [200, { 'Content-type' => 'text/plain' }, ["Hello world simple proc!\n"]] }
 
 Rack::Handler::WEBrick.run app
