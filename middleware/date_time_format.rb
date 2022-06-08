@@ -6,6 +6,7 @@ class DateTimeFormat
   end
 
   def call(env)
+    puts env['REQUEST_PATH'], env['QUERY_STRING']
     start = Time.now
     status, headers, body = @app.call(env)
     headers['X-Runtime'] = format('%fs', (Time.now - start))
