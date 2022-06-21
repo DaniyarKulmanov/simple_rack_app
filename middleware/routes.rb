@@ -17,6 +17,10 @@ class Routes
     [status, headers, body]
   end
 
+  def valid?(status)
+    status == 200
+  end
+
   private
 
   def extract_path(env)
@@ -25,10 +29,6 @@ class Routes
 
   def status_of(path)
     REQUEST[path] || 404
-  end
-
-  def valid?(status)
-    status == 200
   end
 
   def invalid_url(body)
