@@ -2,7 +2,6 @@
 
 class App
   def call(_env)
-    p self.class
     [status, headers, body]
   end
 

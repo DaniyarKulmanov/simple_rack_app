@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# При запросе на любой другой URL необходимо возвращать ответ с кодом статуса 404
 
 class Routes
 
@@ -11,21 +10,29 @@ class Routes
     @app = app
   end
 
-  # TODO: [status, headers, body]  ?
   def call(env)
     status, headers, body = @app.call(env)
-    status = status(env)
+    status = status_of(extract_path(env))
+    invalid_url(body) unless valid?(status)
     [status, headers, body]
   end
 
   private
 
-  def request(path)
+  def extract_path(env)
+    env['PATH_INFO'].delete('/').to_sym
+  end
+
+  def status_of(path)
     REQUEST[path] || 404
   end
 
-  def status(env)
-    path = env['PATH_INFO'].delete('/')
-    request(path.to_sym)
+  def valid?(status)
+    status == 200
+  end
+
+  def invalid_url(body)
+    body.clear
+    body << "\nUnknown URL"
   end
 end
