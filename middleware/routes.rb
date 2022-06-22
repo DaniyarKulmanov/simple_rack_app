@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Routes
-
   REQUEST = {
     time: 200
   }.freeze
@@ -11,7 +10,7 @@ class Routes
   end
 
   def call(env)
-    status, headers, body = @app.call(env)
+    _status, headers, body = @app.call(env)
     status = status_of(extract_path(env))
     invalid_url(body) unless valid?(status)
     [status, headers, body]
