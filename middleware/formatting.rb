@@ -30,23 +30,22 @@ class Formatting
 
   attr_accessor :params, :result
 
-  def format_time
-    self.result = ''
-    requested_formats = params['format'].split(',')
-
+  def build_format(requested_formats)
     requested_formats.each_with_index do |format, index|
       self.result =
         case index
         when 0
           result + FORMATS[format.to_sym]
         else
-          result + '/' + FORMATS[format.to_sym]
+          "#{result}-#{FORMATS[format.to_sym]}"
         end
     end
-    @body << "\n#{Time.now.strftime(result)}"
   end
 
   def convert_date_time
-    format_time
+    self.result = ''
+    requested_formats = params['format'].split(',')
+    build_format(requested_formats)
+    @body << "\n#{Time.now.strftime(result)}"
   end
 end
