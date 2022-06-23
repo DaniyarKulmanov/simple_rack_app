@@ -43,6 +43,7 @@ class Validation
     add_error(404, "\nUnknown URL") if path != 'time'
   end
 
+  # TODO: not catching 'format='
   def bad_format
     if format_empty?
       add_error(400, "\nUnknown time format")
@@ -56,7 +57,6 @@ class Validation
   end
 
   def bad_params
-    p params['format']
     params['format'].split(',') - VALID_PARAMS
   end
 
