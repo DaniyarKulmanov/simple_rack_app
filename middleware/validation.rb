@@ -4,6 +4,8 @@ class Validation
   VALIDATIONS = %i[bad_format unknown_url].freeze
   VALID_PARAMS = %w[year month day hour minute second].freeze
 
+  attr_reader :params
+
   def initialize(app)
     @app = app
     @status = 400
@@ -20,12 +22,13 @@ class Validation
   end
 
   def valid?
-    @status != 200
+    @status == 200
   end
 
   private
 
-  attr_accessor :status, :params, :body, :path
+  attr_accessor :status, :body, :path
+  attr_writer :params
 
   def initialize_params(env)
     self.params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
@@ -53,6 +56,7 @@ class Validation
   end
 
   def bad_params
+    p params['format']
     params['format'].split(',') - VALID_PARAMS
   end
 
