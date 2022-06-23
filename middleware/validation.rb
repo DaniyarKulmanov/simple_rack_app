@@ -1,46 +1,64 @@
 # frozen_string_literal: true
 
 class Validation
-  REQUEST = {
-    time: 200
-  }.freeze
+  VALIDATIONS = %i[bad_format unknown_url].freeze
+  VALID_PARAMS = %w[year month day hour minute second].freeze
 
   def initialize(app)
     @app = app
-    @status = 200
+    @status = 400
+    @params = {}
+    @body = []
+    @path = ''
   end
 
   def call(env)
-    self.status, headers, body = @app.call(env)
-    self.status = status_of(extract_path(env))
-    invalid_url(body) unless valid?
+    self.status, headers, self.body = @app.call(env)
+    initialize_params(env)
+    validate_request
     [status, headers, body]
   end
 
-  # move all validations from formatting here
-  # make like validations module in ruby_full
   def valid?
-    status == 200
-
-    VALIDATIONS.each do |validation|
-      break if validation
-    end
+    @status != 200
   end
 
   private
 
-  attr_accessor :status
+  attr_accessor :status, :params, :body, :path
 
-  def extract_path(env)
-    env['PATH_INFO'].delete('/').to_sym
+  def initialize_params(env)
+    self.params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
+    self.path = env['PATH_INFO'].delete('/')
   end
 
-  def status_of(path)
-    REQUEST[path] || 404
+  def validate_request
+    VALIDATIONS.each { |validation| send(validation) }
   end
 
-  def invalid_url(body)
-    body.clear
-    body << "\nUnknown URL"
+  def unknown_url
+    add_error(404, "\nUnknown URL") if path != 'time'
+  end
+
+  def bad_format
+    if format_empty?
+      add_error(400, "\nUnknown time format")
+    elsif bad_params.any?
+      add_error(400, "\nUnknown time format #{bad_params}")
+    end
+  end
+
+  def format_empty?
+    params['format'].nil?
+  end
+
+  def bad_params
+    params['format'].split(',') - VALID_PARAMS
+  end
+
+  def add_error(status, body)
+    self.body.clear
+    self.status = status
+    self.body << body
   end
 end
