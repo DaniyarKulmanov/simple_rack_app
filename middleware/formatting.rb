@@ -34,10 +34,8 @@ class Formatting
     if bad_status?
       false
     elsif bad_format?
-      self.status = 400
       false
     elsif bad_params?
-      self.status = 400
       false
     else
       true
@@ -63,11 +61,11 @@ class Formatting
     body << "\nUnknown time format #{wrong_params}"
   end
 
-  def format
+  def format_time
     "\n#{Time.now.strftime('%m/%d/%Y')}"
   end
 
   def convert_date_time
-    body << format
+    body << format_time
   end
 end

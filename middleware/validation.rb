@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Routes
+class Validation
   REQUEST = {
     time: 200
   }.freeze
@@ -17,8 +17,14 @@ class Routes
     [status, headers, body]
   end
 
+  # move all validations from formatting here
+  # make like validations module in ruby_full
   def valid?
     status == 200
+
+    VALIDATIONS.each do |validation|
+      break if validation
+    end
   end
 
   private
