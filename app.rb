@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'formatting'
+
 class App
-  def call(_env)
-    p self.class
+  def call(env)
+    body = []
+    body << Formatting.new(env).convert_date_time
     [status, headers, body]
   end
 
@@ -14,9 +17,5 @@ class App
 
   def headers
     { 'Content-type' => 'text/plain' }
-  end
-
-  def body
-    ["Hello world!\n"]
   end
 end

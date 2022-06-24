@@ -10,21 +10,18 @@ class Formatting
     second: '%S'
   }.freeze
 
-  def initialize(app)
-    @app = app
-    @params = {}
-    @body = []
+  attr_reader :body
+
+  def initialize(env)
+    @params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
     @result = ''
   end
 
-  def call(env)
-    p self.class
-    status, headers, @body = @app.call(env)
-    if @app.valid?
-      self.params = @app.params
-      convert_date_time
-    end
-    [status, headers, @body]
+  def convert_date_time
+    self.result = ''
+    requested_formats = params['format'].split(',')
+    build_format(requested_formats)
+    "\n#{Time.now.strftime(result)}"
   end
 
   private
@@ -41,12 +38,5 @@ class Formatting
           "#{result}-#{FORMATS[format.to_sym]}"
         end
     end
-  end
-
-  def convert_date_time
-    self.result = ''
-    requested_formats = params['format'].split(',')
-    build_format(requested_formats)
-    @body << "\n#{Time.now.strftime(result)}"
   end
 end
