@@ -18,6 +18,7 @@ class Formatting
   end
 
   def call(env)
+    p self.class
     status, headers, @body = @app.call(env)
     if @app.valid?
       self.params = @app.params

@@ -8,17 +8,20 @@ class Validation
 
   def initialize(app)
     @app = app
-    @status = 400
+    @status = 200
     @params = {}
     @body = []
     @path = ''
   end
 
   def call(env)
-    self.status, headers, self.body = @app.call(env)
     initialize_params(env)
     validate_request
-    [status, headers, body]
+    if valid?
+      @app.call(env)
+    else
+      [status, { 'Content-Type' => 'text/plain' }, body]
+    end
   end
 
   def valid?
@@ -31,6 +34,8 @@ class Validation
   attr_writer :params
 
   def initialize_params(env)
+    body.clear
+    self.status = 200
     self.params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
     self.path = env['PATH_INFO'].delete('/')
   end
