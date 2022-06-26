@@ -20,7 +20,7 @@ class Validation
     if valid?
       @app.call(env)
     else
-      [status, { 'Content-Type' => 'text/plain' }, body]
+      [status, {}, body]
     end
   end
 
@@ -48,7 +48,6 @@ class Validation
     add_error(404, "\nUnknown URL") if path != 'time'
   end
 
-  # TODO: not catching 'format='
   def bad_format
     if format_empty?
       add_error(400, "\nUnknown time format")
