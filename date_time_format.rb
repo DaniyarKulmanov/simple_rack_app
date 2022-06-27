@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Formatting
+class DateTimeFormat
   FORMATS = {
     year: '%Y',
     month: '%m',
@@ -17,7 +17,7 @@ class Formatting
     @result = ''
   end
 
-  def convert_date_time
+  def convert
     self.result = ''
     requested_formats = params['format'].split(',')
     build_format(requested_formats)
