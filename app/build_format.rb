@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DateTimeFormat
+class BuildFormat
   FORMATS = {
     year: '%Y',
     month: '%m',
@@ -21,7 +21,7 @@ class DateTimeFormat
     self.result = ''
     requested_formats = params['format'].split(',')
     build_format(requested_formats)
-    "\n#{Time.now.strftime(result)}"
+    ["\n#{Time.now.strftime(result)}"]
   end
 
   private
