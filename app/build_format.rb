@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BuildFormat
+module BuildFormat
   FORMATS = {
     year: '%Y',
     month: '%m',
@@ -12,12 +12,7 @@ class BuildFormat
 
   attr_reader :body
 
-  def initialize(env)
-    @params = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
-    @result = ''
-  end
-
-  def convert
+  def display
     self.result = ''
     requested_formats = params['format'].split(',')
     build_format(requested_formats)

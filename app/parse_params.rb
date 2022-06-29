@@ -1,60 +1,52 @@
 # frozen_string_literal: true
 
+require_relative 'build_format'
+
 class ParseParams
-  VALIDATIONS = %i[bad_format unknown_url].freeze
+  include BuildFormat
+
+  VALIDATIONS = %i[bad_format? unknown_url?].freeze
   VALID_PARAMS = %w[year month day hour minute second].freeze
 
-  attr_reader :status
+  attr_reader :status, :error_message
 
   def initialize(params, path)
     @params = params
     @path = path
     @error_message = []
+    @bad_params = []
+    @format = ''
     @status = 0
+    format_params_read
   end
 
   def valid?
-    unknown_url ? bad_format : positive_status
+    validate!
+    error_message.empty?
   end
 
   private
 
   attr_reader :params, :path
-  attr_accessor :error_message
-  attr_writer :status
+  attr_writer :status, :error_message
+  attr_accessor :bad_params, :format
 
-  def positive_status
-    self.status = 200
-    true
+  def validate!
+    VALIDATIONS.each { |validation| send(validation) }
   end
 
-  def unknown_url
-    if path != 'time'
-      add_error(404, "\nUnknown URL")
-      false
-    else
-      positive_status
-    end
+  def unknown_url?
+    add_error(404, "\nUnknown URL: #{path}") if path != 'time'
   end
 
-  def bad_format
-    if format_empty?
-      add_error(400, "\nUnknown time format")
-      false
-    elsif bad_params.any?
-      add_error(400, "\nUnknown time format #{bad_params}")
-      false
-    else
-      positive_status
-    end
+  def bad_format?
+    add_error(400, "\nUnknown time format") if format.empty?
+    add_error(400, "\nUnknown time format #{bad_params}") if bad_params.any?
   end
 
-  def format_empty?
-    params['format'].nil?
-  end
-
-  def bad_params
-    params['format'].split(',') - VALID_PARAMS
+  def format_params_read
+    self.format = params['format'] if params['format']
+    self.bad_params = (params['format'].split(',') - VALID_PARAMS) unless format.empty?
   end
 
   def add_error(status, body)

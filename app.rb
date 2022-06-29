@@ -11,7 +11,7 @@ class App
     )
 
     if result.valid?
-      [200, {}, BuildFormat.new(env).convert]
+      [200, {}, result.display]
     else
       [result.status, {}, result.error_message]
     end
