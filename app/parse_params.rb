@@ -10,9 +10,9 @@ class ParseParams
 
   attr_reader :status, :error_message
 
-  def initialize(params, path)
-    @params = params
-    @path = path
+  def initialize(params)
+    @params = params[:params]
+    @path = params[:path]
     @error_message = []
     @bad_params = []
     @format = ''
