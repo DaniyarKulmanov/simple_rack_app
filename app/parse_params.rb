@@ -1,58 +1,47 @@
 # frozen_string_literal: true
+require_relative 'validation'
 
-require_relative 'build_format'
 
 class ParseParams
-  include BuildFormat
+  include Validation
 
-  VALIDATIONS = %i[bad_format? unknown_url?].freeze
-  VALID_PARAMS = %w[year month day hour minute second].freeze
+  FORMATS = {
+    year: '%Y',
+    month: '%m',
+    day: '%d',
+    hour: '%H',
+    minute: '%M',
+    second: '%S'
+  }.freeze
 
-  attr_reader :status, :error_message
+  attr_reader :body
 
   def initialize(params)
-    @params = params[:params]
-    @path = params[:path]
-    @error_message = []
-    @bad_params = []
-    @format = ''
-    @status = 0
-    format_params_read
+    super
+    @params = params[:query_string]
+    @path = params[:path_info]
   end
 
-  def valid?
-    validate!
-    error_message.empty?
+  def display_data
+    self.result = ''
+    requested_formats = params['format'].split(',')
+    build_format(requested_formats)
+    ["\n#{Time.now.strftime(result)}"]
   end
 
   private
 
-  attr_reader :params, :path
-  attr_writer :status, :error_message
-  attr_accessor :bad_params, :format
+  attr_accessor :params, :path, :result
 
-  def validate!
-    VALIDATIONS.each { |validation| send(validation) }
-  end
-
-  def unknown_url?
-    add_error(404, "\nUnknown URL: #{path}") if path != 'time'
-  end
-
-  def bad_format?
-    add_error(400, "\nUnknown time format") if format.empty?
-    add_error(400, "\nUnknown time format #{bad_params}") if bad_params.any?
-  end
-
-  def format_params_read
-    self.format = params['format'] if params['format']
-    self.bad_params = (params['format'].split(',') - VALID_PARAMS) unless format.empty?
-  end
-
-  def add_error(status, body)
-    error_message.clear
-    self.status = 0
-    self.status = status
-    error_message << body
+  def build_format(requested_formats)
+    requested_formats.each_with_index do |format, index|
+      self.result =
+        case index
+        when 0
+          result + FORMATS[format.to_sym]
+        else
+          "#{result}-#{FORMATS[format.to_sym]}"
+        end
+    end
   end
 end

@@ -7,7 +7,7 @@ class App
     result = ParseParams.new(params(env))
 
     if result.valid?
-      [200, {}, result.display]
+      [200, {}, result.display_data]
     else
       [result.status, {}, result.error_message]
     end
@@ -17,8 +17,8 @@ class App
 
   def params(env)
     params = {}
-    params[:params] = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
-    params[:path] = env['PATH_INFO'].delete('/')
+    params[:query_string] = Rack::Utils.parse_nested_query(env['QUERY_STRING'])
+    params[:path_info] = env['PATH_INFO'].delete('/')
     params
   end
 end
