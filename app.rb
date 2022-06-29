@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'app/build_format'
 require_relative 'app/parse_params'
 
 class App
